@@ -1,32 +1,62 @@
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type Matrix struct {
-	numRows, numColumns int
-	elements [][]int
+	Rows int `json:"Rows"`
+	Columns int `json:"Columns"`
+	Elements [][]int `json:"Elements"`
 }
 func (m Matrix) getRows() int{
-	return m.numRows
+	return m.Rows
 }
 func (m Matrix) getColumns() int{
-	return m.numColumns
+	return m.Columns
 }
 func (m *Matrix) setElement(i , j , num int) {
-	m.elements[i][j]=num
+	m.Elements[i][j]=num
 }
+func addMatrix(m Matrix, n Matrix) Matrix {
+	var addMat Matrix
+	addMat = n
+	for i:=0;i<m.Rows;i++ {
+		for j:=0;j<m.Columns;j++ {
+			addMat.Elements[i][j]=m.Elements[i][j] + addMat.Elements[i][j]
+		}
+	}
+	return addMat
+}
+
+func (m *Matrix) toJson(){
+	k, err :=json.MarshalIndent(m,""," ")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(k))
+}
+
 func main() {
 
-	mat := Matrix{numRows: 2,numColumns: 3}
+	mat := Matrix{Rows: 2,Columns: 3}
 	a := make([][] int, mat.getRows())
 	for i:=0; i<mat.getRows();i++ {
 		a[i]=make([]int, mat.getColumns())
 	}
-	fmt.Println(a)
-	mat.elements = a
+	mat.Elements = a
 	mat.setElement(1,1,6)
-	fmt.Println(mat.elements[1][1])
-	fmt.Println("number of rows and Columns are" , mat.getRows(),"and",mat.getColumns(), ".")
 
-	fmt.Println(mat)
+	var mat2 Matrix
+	b := make([][] int, mat.getRows())
+	for i:=0; i<mat.getRows();i++ {
+		b[i]=make([]int, mat.getColumns())
+	}
+	mat2.Elements = b
+	mat2.setElement(1,0,7)
+
+	j := addMatrix(mat,mat2)
+	fmt.Println(j)
+	j.toJson()
 }
