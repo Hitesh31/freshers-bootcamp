@@ -1,19 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
-func Frequency(s string) map[rune]int {
-	m := map[rune]int{}
+var sum = map[string]int{}
+
+func Frequency(s string) map[string]int {
+	m := map[string]int{}
 	for _, r := range s {
-		m[r]++
+		m[string(r)]++
 	}
 	return m
 }
-func countFreq(stream []string) map[rune]int {
-
-	sum := map[rune]int{}
+func countFreq(stream []string) {
 	count := len(stream)
-	results := make(chan map[rune]int, count)
+	results := make(chan map[string]int, count)
 
 	for _, s := range stream {
 		go func(s string) {
@@ -26,15 +29,18 @@ func countFreq(stream []string) map[rune]int {
 			sum[r] += freq
 		}
 	}
-
-	return sum
 }
+func showFreq() {
+	k, err := json.MarshalIndent(sum,""," ")
+	if err != nil {
+		fmt.Println("Error while parsing json")
+		fmt.Println(err)
+	}
+	fmt.Printf(string(k))
+}
+
 func main() {
-	stream := make([]string, 5)
-	stream[0]="quick"
-	stream[1]="brown"
-	stream[2]="fox"
-	stream[3]="lazy"
-	stream[4]="dog"
-	fmt.Println(countFreq(stream))
+	stream := []string{"quick","brown","fox","lazy","dog"}
+	countFreq(stream)
+	showFreq()
 }
