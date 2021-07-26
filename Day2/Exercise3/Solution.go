@@ -6,30 +6,27 @@ import (
 )
 
 var (
-	mutx   sync.Mutex
+	mutex   sync.Mutex
 	balance int
 )
 
 func deposit(val int, wg *sync.WaitGroup) {
-	mutx.Lock()
+	mutex.Lock()
 	fmt.Printf("Depositing %d to account with\n", val)
 	balance += val
-	mutx.Unlock()
+	mutex.Unlock()
 	wg.Done()
 }
 
 func withdraw(val int, wg *sync.WaitGroup) {
-	mutx.Lock()
+	mutex.Lock()
 	if val > balance {
 		fmt.Println("Error, Can't withdraw")
-		mutx.Unlock()
-		wg.Done()
-		return
+	} else {
+		fmt.Printf("Withdrawing %d from account\n", val)
+		balance -= val
 	}
-
-	fmt.Printf("Withdrawing %d from account\n", val)
-	balance -= val
-	mutx.Unlock()
+	mutex.Unlock()
 	wg.Done()
 }
 
